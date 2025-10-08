@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dataviz"
+version = "0.1.0"
+description = "Visualize Python data structures as ASCII mind maps and trees"
+readme = "README.md"
+authors = [
+    {name = "Midhun Haridas", email = "midhunharidas0@gmail.com"}
+]
+license = {text = "MIT"}
+keywords = ["visualization", "data-structures", "debug", "ascii", "tree", "mindmap"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "requests>=2.25.0; python_version>='3.6'",
+]
+
+[project.urls]
+Homepage = "https://github.com/midhunharidas/dataviz"
+Repository = "https://github.com/midhunharidas/dataviz"
+Documentation = "https://github.com/midhunharidas/dataviz/wiki"
+"Issue Tracker" = "https://github.com/midhunharidas/dataviz/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov",
+    "black",
+    "flake8",
+    "pre-commit",
+]
+
+[project.scripts]
+dataviz = "dataviz.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["dataviz*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.md"]
