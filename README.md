@@ -3,7 +3,9 @@ DataViz 📊
 Visualize Python data structures as beautiful ASCII mind maps and trees
 
 https://img.shields.io/pypi/v/dataviz.svg
+
 https://img.shields.io/pypi/pyversions/dataviz.svg
+
 https://img.shields.io/badge/License-MIT-yellow.svg
 https://img.shields.io/pypi/dm/dataviz.svg
 https://img.shields.io/github/stars/GxDrogers/dataviz.svg
@@ -470,3 +472,4 @@ https://img.shields.io/github/issues-pr/GxDrogers/dataviz
 DataViz: See your data structures, don't just read them. 🎯
 
 Happy Coding! 🐍
+
