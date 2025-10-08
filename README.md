@@ -6,8 +6,12 @@ https://img.shields.io/pypi/v/dataviz.svg
 https://img.shields.io/pypi/pyversions/dataviz.svg
 https://img.shields.io/badge/License-MIT-yellow.svg
 https://img.shields.io/pypi/dm/dataviz.svg
+https://img.shields.io/github/stars/GxDrogers/dataviz.svg
+https://img.shields.io/github/forks/GxDrogers/dataviz.svg
 
 DataViz is the ultimate Python module for visualizing complex data structures as intuitive ASCII mind maps. Debug APIs, understand JSON responses, and explore nested data with stunning visual clarity.
+
+Created by Midhun Haridas
 🚀 Quick Start
 Installation
 bash
@@ -21,8 +25,8 @@ from dataviz import viz
 
 data = {
     'user': {
-        'name': 'Midhun', 
-        'age': 23,
+        'name': 'Alice', 
+        'age': 30,
         'posts': [
             {'title': 'Hello World', 'tags': ['python', 'coding']},
             {'title': 'DataViz Rocks!', 'tags': ['opensource']}
@@ -32,12 +36,13 @@ data = {
 
 viz(data)
 
+
 Output:
 text
 
 📦 root
 ├── 👤 user
-│   ├── 📛 name: 'Midhun'
+│   ├── 📛 name: 'Alice'
 │   ├── 🔢 age: 30
 │   └── 📋 posts
 │       ├── 0
@@ -50,6 +55,7 @@ text
 │           └── 🏷️ tags
 │               └── 📦 opensource
 
+
 ✨ Why DataViz?
 Before DataViz
 python
@@ -59,6 +65,7 @@ print(json.dumps(complex_data, indent=2))
 # 🔍 Difficult to spot relationships  
 # 📏 No visual hierarchy
 
+
 With DataViz
 python
 
@@ -66,6 +73,7 @@ viz(complex_data)
 # 🎯 Instant visual understanding
 # 🔗 Clear parent-child relationships
 # 🎨 Beautiful, intuitive display
+
 
 🎯 Key Features
 🎨 Multiple Visualization Styles
@@ -86,6 +94,7 @@ viz(data, style=Styles.ARROW)
 
 # Boxed style
 viz(data, style=Styles.BOXED)
+
 
 🔍 Smart Search & Highlight
 python
@@ -117,6 +126,7 @@ viz(data, theme=Themes.PROFESSIONAL)
 viz(data, theme=Themes.COLORFUL) 
 viz(data, theme=Themes.EMOJI)
 
+
 💾 Multiple Export Formats
 python
 
@@ -132,6 +142,16 @@ python
 
 # Zoom into specific data branches
 viz(data).focus_on("user.posts[0].tags")
+
+🌐 From Multiple Sources
+python
+
+from dataviz import MindMapFactory
+
+# From JSON string, files, URLs, and more
+mind_map = MindMapFactory.from_json('{"data": "value"}')
+mind_map = MindMapFactory.from_file("data.json")
+mind_map = MindMapFactory.from_url("https://api.github.com/users/octocat")
 
 📚 Comprehensive Usage
 Basic Usage
@@ -153,25 +173,6 @@ mind_map = MindMap(
 )
 print(mind_map.render())
 
-From Various Data Sources
-python
-
-from dataviz import MindMapFactory
-
-# From JSON string
-json_str = '{"menu": {"file": "New"}}'
-mind_map = MindMapFactory.from_json(json_str)
-
-# From file
-mind_map = MindMapFactory.from_file("data.json")
-
-# From URL (requires requests)
-mind_map = MindMapFactory.from_url("https://api.github.com/users/octocat")
-
-# From pandas DataFrame
-import pandas as pd
-df = pd.DataFrame({"A": [1, 2], "B": ["x", "y"]})
-viz(df.to_dict())
 
 Advanced Filtering
 python
@@ -184,6 +185,7 @@ filtered = mind_map.filter(lambda node: len(node.children) > 3)
 
 # Show only string values
 filtered = mind_map.filter(lambda node: isinstance(node.value, str))
+
 
 🛠️ Command Line Interface
 Basic Usage
@@ -211,7 +213,7 @@ dataviz data.json --style minimal --theme colorful
 dataviz data.json --show-types --show-memory
 
 # Search and highlight
-dataviz data.json --search "Midhun"
+dataviz data.json --search "Alice"
 
 # Export to file
 dataviz data.json --output structure.html --format html
@@ -247,7 +249,7 @@ options:
   --show-memory         Show memory usage
   --no-icons            Hide icons
 
-🔧 Advanced Examples
+  🔧 Advanced Examples
 API Response Visualization
 python
 
@@ -268,14 +270,6 @@ with open('config.yaml') as f:
     
 viz(config, style="minimal", show_memory=True)
 
-Database Schema Visualization
-python
-
-# With SQLAlchemy
-from dataviz import viz
-from my_app.models import User
-
-viz(User.__dict__, style="professional")
 
 Real-time Data Monitoring
 python
@@ -291,6 +285,22 @@ class LiveDataMonitor:
         self.mind_map = MindMap(new_data)
         print("\033[2J\033[H")  # Clear terminal
         print(self.mind_map.render())
+
+Integration with Web Frameworks
+python
+
+# Flask example
+from flask import Flask, jsonify
+from dataviz import viz
+
+app = Flask(__name__)
+
+@app.route('/debug')
+def debug_route():
+    data = {"users": [], "settings": {}}
+    viz(data)  # Visualize in console
+    return jsonify(data)
+
 
 🎨 Customization
 Creating Custom Themes
@@ -329,132 +339,3 @@ From PyPI (Recommended)
 bash
 
 pip install dataviz
-
-From Source
-bash
-
-git clone https://github.com/GxDrogers/dataviz.git
-cd dataviz
-pip install -e .
-
-For Development
-bash
-
-git clone https://github.com/GxDrogers/dataviz.git
-cd dataviz
-pip install -e ".[dev]"
-pytest  # Run tests
-
-🔗 Integration Examples
-Jupyter Notebooks
-python
-
-from dataviz import viz
-from IPython.display import display, HTML
-
-# Inline visualization
-viz(complex_data)
-
-# Export to HTML in notebook
-from dataviz import save_mind_map
-save_mind_map(MindMap(data), "notebook_output.html")
-display(HTML("notebook_output.html"))
-
-Django Debug Toolbar
-python
-
-# In settings.py
-def show_context_data(request):
-    from dataviz import viz
-    viz(request.__dict__)
-
-Pytest Debugging
-python
-
-# In tests/conftest.py
-import pytest
-from dataviz import viz
-
-@pytest.fixture(autouse=True)
-def debug_data(request):
-    def print_data(data, description=""):
-        if request.config.getoption("verbose") > 0:
-            print(f"\n=== {description} ===")
-            viz(data)
-    return print_data
-
-FastAPI Documentation
-python
-
-from fastapi import FastAPI
-from dataviz import save_mind_map
-import json
-
-app = FastAPI()
-
-@app.on_event("startup")
-async def generate_docs():
-    schema = json.loads(app.openapi())
-    save_mind_map(MindMap(schema), "api_schema.html")
-
-🤝 Contributing
-
-We love contributions! Here's how to help:
-
-    Fork the repository
-
-    Create a feature branch: git checkout -b amazing-feature
-
-    Commit your changes: git commit -m 'Add amazing feature'
-
-    Push to the branch: git push origin amazing-feature
-
-    Open a Pull Request
-
-Development Setup
-bash
-
-git clone https://github.com/GxDrogers/dataviz.git
-cd dataviz
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -e ".[dev]"
-pre-commit install
-
-Running Tests
-bash
-
-pytest tests/ -v
-pytest tests/ --cov=dataviz --cov-report=html
-
-📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-🙏 Acknowledgments
-
-    Author: Midhun Haridas
-
-    Inspiration: Every developer who struggled with complex JSON structures
-
-    Special Thanks: The Python community for amazing tooling and support
-
-📞 Support
-
-    Documentation: GitHub Wiki
-
-    Issues: GitHub Issues
-
-    Email: midhunharidas0@gmail.com
-
-🚀 Ready to Visualize?
-
-bash
-
-pip install dataviz
-
-Star the repo ⭐ if you find DataViz useful!
-
-https://img.shields.io/github/stars/GxDrogers/dataviz.svg?style=social
-https://img.shields.io/github/forks/GxDrogers/dataviz.svg?style=social
-
-DataViz: See your data structures, don't just read them. 🎯
