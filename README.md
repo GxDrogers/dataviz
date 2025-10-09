@@ -1,6 +1,6 @@
 <!-- START COPY -->
 <p align="center">
-  <img src="images/log11.svg" alt="MXRay Logo" width="150">
+  <img src="images/logo.svg" alt="MXRay Logo" width="150">
 </p>
 
 <h1 align="center">MXRay</h1>
@@ -33,6 +33,7 @@
 
 ```bash
 pip install mxray
+
 
 
 
