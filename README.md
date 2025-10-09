@@ -1,4 +1,3 @@
-<!-- START COPY -->
 <p align="center">
   <img src="images/logo.svg" alt="MXRay Logo" width="150">
 </p>
@@ -484,5 +483,6 @@ Midhun Haridas
     pip install mxray
 
 ⭐ Star the repo if you find MXRay useful!
-<p align="center"> <i>MXRay - See your data structures, don't just read them</i> </p> ```
+<p align="center"> <i>MXRay - See your data structures, don't just read them</i> </p> 
+    ```    
 
