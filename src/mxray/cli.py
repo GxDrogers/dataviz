@@ -3,7 +3,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from .core import MindMap, MindMapFactory, viz
+from .core import MindMap, MindMapFactory, xray
 from .exporters import save_mind_map
 from .styles import get_theme
 
