@@ -3,7 +3,7 @@
   <img src="images/logo.svg" alt="MXRay Logo" width="150">
 </p>
 
-<h1 align="center">🔍 MXRay</h1>
+<h1 align="center">MXRay</h1>
 <p align="center">
   <strong>X-ray vision for your Python data structures</strong>
 </p>
@@ -33,4 +33,5 @@
 
 ```bash
 pip install mxray
+
 
