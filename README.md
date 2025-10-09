@@ -328,67 +328,67 @@
 
   
 ## 📚 API Reference
-Main Functions
-xray(data, **kwargs)
+    Main Functions
+    xray(data, **kwargs)
 
-The main one-liner function for instant visualization.
+  The main one-liner function for instant visualization.
 
-Parameters:
+  Parameters:
 
-  data: Any Python data structure (dict, list, etc.)
+    data: Any Python data structure (dict, list, etc.)
+  
+    style: Visualization style ('tree', 'minimal', 'arrow', 'boxed')
+  
+    show_icons: Boolean to enable/disable icons (default: True)
+  
+    show_types: Boolean to show data types (default: False)
+  
+    show_memory: Boolean to show memory usage (default: False)
+  
+    theme: Icon theme ('default', 'professional', 'colorful', 'emoji')
+  
+    max_depth: Maximum depth to visualize (default: None)
 
-  style: Visualization style ('tree', 'minimal', 'arrow', 'boxed')
+    MindMap(data, **kwargs)
 
-  show_icons: Boolean to enable/disable icons (default: True)
+  The main class for advanced usage.
 
-  show_types: Boolean to show data types (default: False)
-
-  show_memory: Boolean to show memory usage (default: False)
-
-  theme: Icon theme ('default', 'professional', 'colorful', 'emoji')
-
-  max_depth: Maximum depth to visualize (default: None)
-
-MindMap(data, **kwargs)
-
-The main class for advanced usage.
-
-Methods:
-
-  .render(): Returns the mind map as string
-
-  .search(query): Highlights nodes matching query
-
-  .filter(predicate): Filters nodes based on function
-
-  .focus_on(path): Zooms into specific data path
-
-  .explore(): Interactive exploration (future)
+  Methods:
+  
+    .render(): Returns the mind map as string
+  
+    .search(query): Highlights nodes matching query
+  
+    .filter(predicate): Filters nodes based on function
+  
+    .focus_on(path): Zooms into specific data path
+  
+    .explore(): Interactive exploration (future)
 
 ### Factory Methods
 
-MindMapFactory
+  MindMapFactory
 
-  .from_json(json_str): Create from JSON string
-
-  .from_file(file_path): Create from file
-
-  .from_url(url): Create from URL (requires requests)
+    .from_json(json_str): Create from JSON string
+  
+    .from_file(file_path): Create from file
+  
+    .from_url(url): Create from URL (requires requests)
 
 ### Export Functions
-save_mind_map(mind_map, file_path, format='auto')
-
-Save mind map to various formats.
+    save_mind_map(mind_map, file_path, format='auto')
+    
+    Save mind map to various formats.
 
 Formats:
 
-  txt: Plain text (default)
-
-  md: Markdown with code blocks
-
-  html: Interactive HTML
-
-  json: JSON structure
+    txt: Plain text (default)
+  
+    md: Markdown with code blocks
+  
+    html: Interactive HTML
+  
+    json: JSON structure
 
 ## 📦 Installation
 
@@ -411,7 +411,7 @@ Formats:
 
   Optional: requests for URL support
 
-##🤝 Contributing
+## 🤝 Contributing
 
 We love contributions! Here's how you can help:
 Reporting Issues
@@ -450,7 +450,7 @@ Reporting Issues
     pytest tests/ -v
     pytest tests/ --cov=mxray --cov-report=html
 
-##📄 License
+## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 👨💻 Author
@@ -463,25 +463,26 @@ Midhun Haridas
 
 ## 🙏 Acknowledgments
 
-Inspiration: Every developer who struggled with complex JSON structures
-
-Testing: Early adopters and contributors
-
-Community: Python packaging and open-source ecosystem
-
-Icons: Twitter Emoji for the beautiful icons
+  Inspiration: Every developer who struggled with complex JSON structures
+  
+  Testing: Early adopters and contributors
+  
+  Community: Python packaging and open-source ecosystem
+  
+  Icons: Twitter Emoji for the beautiful icons
 
 ## 📞Support
-Documentation: GitHub Wiki
-
-Issues: GitHub Issues
-
-Discussions: GitHub Discussions
-
-Email: midhunharidas0@gmail.com
+  Documentation: GitHub Wiki
+  
+  Issues: GitHub Issues
+  
+  Discussions: GitHub Discussions
+  
+  Email: midhunharidas0@gmail.com
 
 ## 🚀 Ready to X-ray Your Data?
     pip install mxray
 
 ⭐ Star the repo if you find MXRay useful!
 <p align="center"> <i>MXRay - See your data structures, don't just read them</i> </p> ```
+
