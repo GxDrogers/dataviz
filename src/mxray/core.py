@@ -1,9 +1,10 @@
-from typing import Any, Dict, List, Optional, Union, Callable
+from typing import Any, Dict, List, Optional, Union, Callable, Set
 from dataclasses import dataclass
 import json
 import sys
 from pathlib import Path
 from datetime import datetime
+from .colors import supports_color, get_color_theme
 
 @dataclass
 class Node:
@@ -16,6 +17,7 @@ class Node:
     path: str = ""
     data_type: str = ""
     memory_size: int = 0
+    is_cycle: bool = False  # New: track cyclical references
     
     def __post_init__(self):
         if self.children is None:
@@ -34,15 +36,23 @@ class MindMap:
     """Main class for creating mind maps from data structures"""
     
     def __init__(self, data: Any, style: str = "tree", show_icons: bool = True, 
-                 show_types: bool = False, show_memory: bool = False,
-                 max_depth: Optional[int] = None, theme: Optional[Union[str, Dict]] = None):
+             show_types: bool = False, show_memory: bool = False,
+             max_depth: Optional[int] = 10, theme: Optional[Union[str, Dict]] = None,
+             truncate_long_strings: bool = True, max_string_length: int = 50,
+             use_colors: bool = True, color_theme: str = 'default'):  # New color options
+
         self.data = data
         self.style = style
         self.show_icons = show_icons
         self.show_types = show_types
         self.show_memory = show_memory
         self.max_depth = max_depth
-        
+        self.truncate_long_strings = truncate_long_strings
+        self.max_string_length = max_string_length
+        self.use_colors = use_colors and supports_color()
+        self.color_theme = get_color_theme(color_theme) if self.use_colors else get_color_theme('none')
+
+
         # Handle theme - can be string name or dict
         if isinstance(theme, str):
             from .styles import get_theme
@@ -55,32 +65,62 @@ class MindMap:
         
         self.root = self._build_tree("root", data, 0)
         self._highlighted_nodes = set()
-
+    
+    def _build_tree(self, key: str, value: Any, depth: int, parent: Node = None, path: str = "", visited: Optional[Set[int]] = None) -> Node:
+        """Recursively build tree structure from data with cycle detection"""
+        if visited is None:
+            visited = set()
         
-    def _build_tree(self, key: str, value: Any, depth: int, parent: Node = None, path: str = "") -> Node:
-        """Recursively build tree structure from data"""
-        if self.max_depth and depth > self.max_depth:
-            return Node(key=key, value="...", depth=depth, parent=parent, path=path)
-            
+        # Create node
         node = Node(key=key, value=value, depth=depth, parent=parent, path=path)
         
+        # Check for cycles using object id
+        obj_id = id(value)
+        if obj_id in visited:
+            node.is_cycle = True
+            node.value = "(cyclical reference)"
+            return node
+        
+        # Add to visited set for cycle detection
+        visited.add(obj_id)
+        
+        # Check max depth
+        if self.max_depth and depth >= self.max_depth:
+            node.value = f"... (max depth {self.max_depth} reached)"
+            visited.remove(obj_id)  # Clean up
+            return node
+        
+        # Build children for container types
         if isinstance(value, dict):
             for k, v in value.items():
                 child_path = f"{path}.{k}" if path else k
-                child = self._build_tree(k, v, depth + 1, node, child_path)
+                child = self._build_tree(k, v, depth + 1, node, child_path, visited)
                 node.children.append(child)
         elif isinstance(value, (list, tuple)):
             for i, item in enumerate(value):
                 child_path = f"{path}[{i}]" if path else f"[{i}]"
-                child = self._build_tree(str(i), item, depth + 1, node, child_path)
+                child = self._build_tree(str(i), item, depth + 1, node, child_path, visited)
                 node.children.append(child)
         
+        # Remove from visited set when done with this branch
+        visited.remove(obj_id)
         return node
+    
+    def _truncate_string(self, text: str) -> str:
+        """Truncate long strings for better display"""
+        if not self.truncate_long_strings or len(text) <= self.max_string_length:
+            return text
+        
+        return text[:self.max_string_length - 3] + "..."
     
     def _get_icon(self, value: Any, key: str = "") -> str:
         """Get appropriate icon for data type using theme"""
         if not self.show_icons:
             return ""
+        
+        # Handle cyclical references
+        if hasattr(value, 'is_cycle') and value.is_cycle:
+            return "🔄 "
         
         theme_icons = self.theme.get("icons", {})
         
@@ -115,11 +155,11 @@ class MindMap:
         elif value is None:
             return theme_icons.get("none", "🚫") + " "
         
-        # 4. Fallback
+        # 4. Fallback for custom objects
         return "• "
     
-    def _render_node(self, node: Node, prefix: str = "", is_last: bool = True) -> str:
-        """Render a single node with proper connectors"""
+    def _render_node(self, node: Node, prefix: str = "", is_last: bool = True, terminal_width: int = 80) -> str:
+        """Render a single node with proper connectors and width handling"""
         icon = self._get_icon(node.value, node.key)
         is_highlighted = node.path in self._highlighted_nodes
         
@@ -132,20 +172,27 @@ class MindMap:
             connectors = self._get_connectors(is_last)
             line = f"{prefix}{connectors['node']}{highlight_prefix}{icon}{node.key}"
             
-            # Add metadata
-            metadata_parts = []
-            if self.show_types and not isinstance(node.value, (dict, list, tuple)):
-                metadata_parts.append(f"({node.data_type})")
-            if self.show_memory and node.memory_size > 0:
-                metadata_parts.append(f"[{node.memory_size} bytes]")
-            
-            metadata = " ".join(metadata_parts)
-            if metadata:
-                line += f" {metadata}"
-            
-            # Show primitive values inline
-            if not isinstance(node.value, (dict, list, tuple)) and node.value is not None:
-                line += f": {repr(node.value)}"
+            # Handle cyclical references
+            if hasattr(node, 'is_cycle') and node.is_cycle:
+                line += ": 🔄 (cyclical reference)"
+            else:
+                # Add metadata
+                metadata_parts = []
+                if self.show_types and not isinstance(node.value, (dict, list, tuple)):
+                    metadata_parts.append(f"({node.data_type})")
+                if self.show_memory and node.memory_size > 0:
+                    metadata_parts.append(f"[{node.memory_size} bytes]")
+                
+                metadata = " ".join(metadata_parts)
+                if metadata:
+                    line += f" {metadata}"
+                
+                # Show primitive values inline (with truncation)
+                if not isinstance(node.value, (dict, list, tuple)) and node.value is not None:
+                    value_str = repr(node.value)
+                    if self.truncate_long_strings and len(value_str) > self.max_string_length:
+                        value_str = self._truncate_string(value_str)
+                    line += f": {value_str}"
             line += "\n"
         
         # Build new prefix for children
@@ -154,13 +201,15 @@ class MindMap:
         else:
             new_prefix = ""
         
-        # Render children
-        for i, child in enumerate(node.children):
-            is_last_child = i == len(node.children) - 1
-            line += self._render_node(child, new_prefix, is_last_child)
+        # Render children (only if not cyclical)
+        if not (hasattr(node, 'is_cycle') and node.is_cycle):
+            for i, child in enumerate(node.children):
+                is_last_child = i == len(node.children) - 1
+                line += self._render_node(child, new_prefix, is_last_child, terminal_width)
         
         return line
     
+ 
     def _get_connectors(self, is_last: bool) -> Dict[str, str]:
         """Get connector characters based on style"""
         connectors = {
