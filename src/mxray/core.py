@@ -35,17 +35,28 @@ class MindMap:
     
     def __init__(self, data: Any, style: str = "tree", show_icons: bool = True, 
                  show_types: bool = False, show_memory: bool = False,
-                 max_depth: Optional[int] = None, theme: Optional[Dict] = None):
+                 max_depth: Optional[int] = None, theme: Optional[Union[str, Dict]] = None):
         self.data = data
         self.style = style
         self.show_icons = show_icons
         self.show_types = show_types
         self.show_memory = show_memory
         self.max_depth = max_depth
-        self.theme = theme or {}
+        
+        # Handle theme - can be string name or dict
+        if isinstance(theme, str):
+            from .styles import get_theme
+            self.theme = get_theme(theme)
+        elif isinstance(theme, dict):
+            self.theme = theme
+        else:
+            from .styles import get_theme
+            self.theme = get_theme("default")
+        
         self.root = self._build_tree("root", data, 0)
         self._highlighted_nodes = set()
-    
+
+        
     def _build_tree(self, key: str, value: Any, depth: int, parent: Node = None, path: str = "") -> Node:
         """Recursively build tree structure from data"""
         if self.max_depth and depth > self.max_depth:
@@ -67,46 +78,44 @@ class MindMap:
         return node
     
     def _get_icon(self, value: Any, key: str = "") -> str:
-        """Get appropriate icon for data type"""
+        """Get appropriate icon for data type using theme"""
         if not self.show_icons:
             return ""
         
-        # Custom theme icons
-        if self.theme.get('icons'):
-            custom_icons = self.theme['icons']
-            if key in custom_icons:
-                return custom_icons[key] + " "
+        theme_icons = self.theme.get("icons", {})
         
-        # Smart icon detection based on key names
+        # 1. First try key-based icons from theme
+        if key and key in theme_icons:
+            return theme_icons[key] + " "
+        
+        # 2. Try common key patterns (case insensitive)
         key_lower = key.lower()
-        icon_rules = {
-            'name': '📛', 'username': '👤', 'user': '👤', 'email': '📧',
-            'age': '🎂', 'title': '✏️', 'description': '📝',
-            'id': '🆔', 'url': '🌐', 'link': '🔗', 'website': '🌐',
-            'phone': '📞', 'address': '🏠', 'location': '📍',
-            'price': '💰', 'cost': '💰', 'amount': '💰',
-            'date': '📅', 'time': '⏰', 'created': '📅', 'updated': '🔄',
-            'status': '📊', 'active': '✅', 'enabled': '✅', 'disabled': '❌',
-            'count': '🔢', 'total': '🔢', 'size': '📏',
-            'file': '📄', 'image': '🖼️', 'photo': '🖼️',
-            'password': '🔒', 'token': '🔑', 'key': '🔑',
-            'tags': '🏷️', 'categories': '📑',
-        }
-        
-        if key_lower in icon_rules:
-            return icon_rules[key_lower] + " "
-        
-        # Type-based icons
-        type_icons = {
-            dict: "📦", list: "📋", tuple: "📑",
-            str: "🔤", int: "🔢", float: "🔢",
-            bool: "✅" if value else "❌", 
-            type(None): "🚫"
-        }
-        
-        for data_type, icon in type_icons.items():
-            if isinstance(value, data_type):
+        for theme_key, icon in theme_icons.items():
+            if theme_key in key_lower:
                 return icon + " "
+        
+        # 3. Type-based icons
+        if isinstance(value, dict):
+            return theme_icons.get("dict", "📦") + " "
+        elif isinstance(value, list):
+            return theme_icons.get("list", "📋") + " "
+        elif isinstance(value, tuple):
+            return theme_icons.get("tuple", "📑") + " "
+        elif isinstance(value, str):
+            return theme_icons.get("str", "🔤") + " "
+        elif isinstance(value, int):
+            return theme_icons.get("int", "🔢") + " "
+        elif isinstance(value, float):
+            return theme_icons.get("float", "🔢") + " "
+        elif isinstance(value, bool):
+            if value:
+                return theme_icons.get("bool", "✅") + " "
+            else:
+                return theme_icons.get("bool_false", "❌") + " "
+        elif value is None:
+            return theme_icons.get("none", "🚫") + " "
+        
+        # 4. Fallback
         return "• "
     
     def _render_node(self, node: Node, prefix: str = "", is_last: bool = True) -> str:
