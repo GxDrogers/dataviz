@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mxray"
-version = "0.1.0"
+version = "0.1.1"
 description = "X-ray vision for your Python data structures - ASCII mind maps and tree visualizations"
 readme = "README.md"
 authors = [
@@ -54,3 +54,4 @@ include = ["mxray*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.txt", "*.md"]
+
