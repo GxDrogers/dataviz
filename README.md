@@ -46,8 +46,8 @@ data = {
         'max_depth': 5
     }
 }
-```
     xray(data)
+```
 
 ## 📊 Output
 
@@ -563,6 +563,7 @@ pip install mxray
 
 ⭐ Star the repo if you find MXRay useful!
 <p align="center"> <i>MXRay - See your data structures, don't just read them</i> </p> 
+
 
 
 
